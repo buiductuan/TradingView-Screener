@@ -11,6 +11,8 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # Custom filter to format numbers with commas (thousands separator)
+
+
 def format_number(value: float) -> str:
     return f"{value:,.2f}"
 
@@ -59,13 +61,23 @@ async def oauth2callback(request: Request):
 async def google_sheet_post(request: Request):
     global credentials
     payload = await request.json()
-    print(payload)
     market = payload.get('market') or 'crypto'
     limit = payload.get('limit') or '10'
+    sheet_id = payload.get(
+        'sheet_id') or '1YLZOHMQC7yt1Ui9affJcEnlof5LSf0LQgObZ7sq3Kmc'
+    sheet_range = payload.get('sheet_range') or 'Trang tính1!A2'
+
+    if sheet_id is not None and sheet_range is not None:
+        with open('sheet.json', 'w') as token:
+            token.write(json.dumps({
+                "sheet_id": sheet_id,
+                "sheet_range": sheet_range
+            }))
+
     _, df = (Query().select(
         *columns).set_markets(market).limit(int(limit)).get_scanner_data())
     google_sheet.write_to_google_sheets(
-        credentials=credentials, spreadsheet_id='1YLZOHMQC7yt1Ui9affJcEnlof5LSf0LQgObZ7sq3Kmc', sheet_range='Trang tính1!A2', data=df)
+        credentials=credentials, spreadsheet_id=sheet_id, sheet_range=sheet_range, data=df)
     return {
         "status": True,
         "data": []
@@ -76,10 +88,20 @@ async def google_sheet_post(request: Request):
 def index(request: Request):
     market = request.query_params.get('market') or 'crypto'
     limit = request.query_params.get('limit') or '10'
+    sheet_id = None
+    sheet_range = None
+    try:
+        with open('sheet.json', 'r') as file:
+            data = json.load(file)
+            sheet_id = data['sheet_id']
+            sheet_range = data['sheet_range']
+    except:
+        pass
+
     data = (Query().select(
         *columns).set_markets(market).limit(int(limit)).get_scanner_data_raw())
     return templates.TemplateResponse(
         "index.html",
         {"request": request, "credentials": credentials, "columns": columns, "limit": limit,
-            "market": market, "total": data['totalCount'], "data": data['data']}
+            "market": market, "total": data['totalCount'], "data": data['data'], "sheet_id": sheet_id, "sheet_range": sheet_range}
     )

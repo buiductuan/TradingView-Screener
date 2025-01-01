@@ -28,7 +28,7 @@
                     </div>
                     
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <div class="form-group">
                         <label for="limit">Limit</label>
                         <select name="limit" class="form-control">
@@ -37,6 +37,14 @@
                             <option {% if limit=="50" %}selected{% endif %} value="50">50</option>
                         </select>
                     </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="sheet_id">SheetId</label>
+                    <input type="text" class="form-control" {% if credentials is none %}disabled{% endif %} name="sheet_id" value="{{ sheet_id }}" placeholder="Your google sheetID">
+                </div>
+                <div class="col-md-4">
+                    <label for="sheet_id">Sheet range</label>
+                    <input type="text" class="form-control" {% if credentials is none %}disabled{% endif %} name="sheet_range" value="{{ sheet_range }}" placeholder="Your google sheet range, ex: Sheet1!A1">
                 </div>
             </div>
             <div class="row">
@@ -90,12 +98,16 @@
             $('#btnExportGoogleSheet').on('click', function(){
                 const limit = $('select[name="limit"]').val();
                 const market = $('select[name="market"]').val();
+                const sheet_id = $('input[name="sheet_id"]').val();
+                const sheet_range = $('input[name="sheet_range"]').val();
                 $.ajax({
                     url: '/api/google-sheet',
                     method: 'POST',
                     data: JSON.stringify({
                         limit,
-                        market
+                        market,
+                        sheet_range,
+                        sheet_id
                     }),
                     beforeSend: function(){
                          $('#btnExportGoogleSheet').text('Exporting ...')
