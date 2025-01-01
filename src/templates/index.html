@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Tradingview</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1>Tradingview</h1>
+        <hr>
+        <form action="">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="markets">Market</label>
+                        <select name="market" class="form-control">
+                            <option {% if market=="crypto" %}selected{% endif %} value="crypto">Crypto</option>
+                            <option {% if market=="vietnam" %}selected{% endif %} value="vietnam">VietNam</option>
+                            <option {% if market=="italy" %}selected{% endif %} value="italy">Italy</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="limit">Limit</label>
+                        <select name="limit" class="form-control">
+                            <option {% if limit=="10" %}selected{% endif %} value="10">10</option>
+                            <option {% if limit=="20" %}selected{% endif %} value="20">20</option>
+                            <option {% if limit=="50" %}selected{% endif %} value="50">50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    {% if credentials is none %}
+                        <a href="/authorize" class="btn btn-info">Connect google sheet</a>
+                    {% else %}
+                        <button type="button" id="btnExportGoogleSheet" class="btn btn-success">Export to sheet</button>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+        <hr>
+        <p class="m-2">Total: <b>{{ total }}</b> items</p>
+        <div style="height: 50vh; overflow-y: auto; margin-top: 20px;">
+            <table class="table">
+                <thead>
+                    <th>name</th>
+                    {% for col in columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td>{{ item['s'] }}</td>
+                        {% for col in columns %}
+                        <td>{{ item['d'][loop.index - 1] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- <p>{{ data }}</p> -->
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script>
+        $(function(){
+            $('#btnExportGoogleSheet').on('click', function(){
+                const limit = $('select[name="limit"]').val();
+                const market = $('select[name="market"]').val();
+                $.ajax({
+                    url: '/api/google-sheet',
+                    method: 'POST',
+                    data: JSON.stringify({
+                        limit,
+                        market
+                    }),
+                    beforeSend: function(){
+                         $('#btnExportGoogleSheet').text('Exporting ...')
+                    },
+                    success: function(res){
+                        console.log(res);
+                        if(res.status){
+                            alert('Export success');
+                        }
+                    },
+                    error: function(err){
+                        console.log(err);
+                    },
+                    complete: function(){
+                        $('#btnExportGoogleSheet').text('Export to sheet')
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

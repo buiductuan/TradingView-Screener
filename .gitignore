@@ -6,3 +6,7 @@ docs/
 data/
 dist/
 trash/
+.vscode
+.env
+*.json
+venv

@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "tradingview-screener"
+name = "tradingview"
 version = "3.0.0-rc.1"
 description = "A package for creating stock screeners with the TradingView API"
 authors = ["shner-elmo <770elmo@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "tradingview_screener", from = "src"}]
+packages = [{include = "tradingview", from = "src"}]
 repository = "https://github.com/shner-elmo/TradingView-Screener"
 documentation = "https://github.com/shner-elmo/TradingView-Screener/blob/master/README.md"
 classifiers = [
@@ -29,7 +29,14 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.9"
 requests = "2.*"
-pandas = "2.*"
+uvicorn = "^0.34.0"
+fastapi = "^0.115.6"
+pandas = "^2.2.3"
+google-auth = "^2.37.0"
+google-auth-oauthlib = "^1.2.1"
+google-auth-httplib2 = "^0.2.0"
+google-api-python-client = "^2.156.0"
+python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.16.1"

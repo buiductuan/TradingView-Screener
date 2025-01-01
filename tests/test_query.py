@@ -1,7 +1,7 @@
 import pytest
 
-from tradingview_screener.query import Query, And, Or
-from tradingview_screener.column import col
+from tradingview.query import Query, And, Or
+from tradingview.column import col
 
 
 @pytest.mark.parametrize(
@@ -23,7 +23,7 @@ def test_set_markets(markets: list[str], expected_url: str):
 
 
 def test_limit_and_offset():
-    from tradingview_screener.query import DEFAULT_RANGE
+    from tradingview.query import DEFAULT_RANGE
 
     original_range = DEFAULT_RANGE.copy()
 

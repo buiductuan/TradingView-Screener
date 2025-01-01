@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 
 import requests
 
-from tradingview_screener.column import Column
+from tradingview.column import Column
 
 if TYPE_CHECKING:
     import pandas as pd
     from typing import Literal, Any
     from typing_extensions import Self
-    from tradingview_screener.models import (
+    from tradingview.models import (
         QueryDict,
         SortByDict,
         ScreenerDict,

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import re
-import tradingview_screener
+import tradingview
 from pathlib import Path
 
 import pandas as pd
 
 
 def _test_readme_examples():
-    readme = Path(tradingview_screener.__file__).parents[2] / 'README.md'
+    readme = Path(tradingview.__file__).parents[2] / 'README.md'
     source = readme.read_text(encoding='utf-8')
 
     matches = re.findall(r'(?<=```python)(.*?)(?=```)', source, re.DOTALL)
