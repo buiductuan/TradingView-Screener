@@ -14,11 +14,14 @@ templates = Jinja2Templates(directory="templates")
 def format_number(value: float) -> str:
     return f"{value:,.2f}"
 
-
 # Add the custom filter to the Jinja2 environment
 templates.env.filters['format_number'] = format_number
 
 credentials = None
+
+
+# Danh sách các cột cần lấy dữ liệu
+# All data: https://shner-elmo.github.io/TradingView-Screener/2.5.0/tradingview_screener/constants.html#COLUMNS
 columns = ['close',
            'open',
            'high',
@@ -54,7 +57,7 @@ async def oauth2callback(request: Request):
     credentials = google_sheet.oauth2callback(request)
     return RedirectResponse('/')
 
-
+# API xuất ra google sheet
 @app.post("/api/google-sheet")
 async def google_sheet_post(request: Request):
     global credentials
@@ -81,7 +84,7 @@ async def google_sheet_post(request: Request):
         "data": []
     }
 
-
+# Hiển thị của trang chủ
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
     market = request.query_params.get('market') or 'crypto'
