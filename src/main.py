@@ -11,8 +11,6 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # Custom filter to format numbers with commas (thousands separator)
-
-
 def format_number(value: float) -> str:
     return f"{value:,.2f}"
 
@@ -26,7 +24,7 @@ columns = ['close',
            'high',
            'low',
            'volume',
-           #    'change_percent',
+           #'change_percent_24h',
            'market_cap_basic',
            'RSI',
            'MACD.macd',
