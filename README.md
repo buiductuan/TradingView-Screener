@@ -39,3 +39,8 @@ PORT=<port you want expose to local> | ex: 8000
 CREDENTIALS_FILE=<directory to secret json file> | ex: secret.json
 REDIRECT_URI=http://<url your web>/oauth2callback | ex: http://127.0.0.1:8000/oauth2callback
 ```
+
+## 4. Run project
+```
+docker compose up --build -d
+```
