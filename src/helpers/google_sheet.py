@@ -1,10 +1,12 @@
 import os
+import json
 import numpy as np
 from fastapi import Request
 from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
+from google.auth.transport import requests
 
 load_dotenv()
 SCOPES = os.getenv('SCOPES', 'https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/drive').split(',')
@@ -16,11 +18,17 @@ def authorize():
     try:
         credentials = Credentials.from_authorized_user_file(
             'token.json', SCOPES)
+        
+        if credentials.expired:
+            new_credentials = refresh_token()
+            if new_credentials is not None:
+                credentials = new_credentials
         return {
             "is_redirect": False,
             "credentials": credentials
         }
-    except Exception:
+    except Exception as e:
+        print(f'[authorize] error: {e}')
         flow = Flow.from_client_secrets_file(
             CREDENTIALS_FILE,
             scopes=SCOPES,
@@ -31,7 +39,28 @@ def authorize():
             "is_redirect": True,
             "auth_url": auth_url
         }
-
+        
+def refresh_token():
+    credentials = None
+    if os.path.exists('token.json'):
+        with open('token.json', 'r') as f:
+            data = json.load(f)
+            credentials = Credentials(
+                token=data['token'], 
+                refresh_token=data['refresh_token'], 
+                token_uri=data['token_uri'], 
+                client_id=data['client_id'], 
+                client_secret=data['client_secret']
+            )
+            f.close()
+        credentials.refresh(request=requests.Request())
+        if credentials.token:
+            if os.path.exists('token.json'):
+                os.remove('token.json')
+            with open('token.json', 'w') as f:
+                f.write(credentials.to_json())
+                f.close()
+    return credentials
 
 def oauth2callback(request: Request):
     query_params = dict(request.query_params)
