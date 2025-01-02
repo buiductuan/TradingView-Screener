@@ -10,3 +10,7 @@ trash/
 .env
 *.json
 venv
+celerybeat-*
+*.bak
+*.dat
+*.dir
